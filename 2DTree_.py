@@ -13,7 +13,7 @@ Created on Wed Nov 22 21:44:20 2017
 """
 
 class Node(object):
-    """ 
+    """
     A Node in a kd-tree
     A tree is represented by its root node, and every node represents
     its subtree
@@ -28,7 +28,7 @@ class Node(object):
             self.data1 = None
         self.left = left
         self.right = right
-    
+
     @property
     def children(self):
         """
@@ -41,7 +41,7 @@ class Node(object):
             yield self.left, 0
         if self.right and self.right.data is not None:
             yield self.right, 1
-            
+
     def height(self):
         """
         Returns height of the (sub)tree, without considering
@@ -49,9 +49,9 @@ class Node(object):
         """
         min_height = int(bool(self))
         return max([min_height] + [c.height()+1 for c, p in self.children])
-                
+
 class KDNode(Node):
-    """ 
+    """
     A Node that contains kd-tree specific data and methods
     """
 
@@ -67,7 +67,7 @@ class KDNode(Node):
         self.axis = axis
         self.sel_axis = sel_axis
         self.dimensions = dimensions
-         
+
 def create(point_list=None, dimensions=2, axis=0, sel_axis=None):
     """ Creates a kd-tree from a list of points
     All points in the list must be of the same dimensionality.
@@ -91,7 +91,7 @@ def create(point_list=None, dimensions=2, axis=0, sel_axis=None):
     point_list = list(point_list)
     point_list.sort(key=lambda point: point[axis])
     median = len(point_list) // 2
-    
+
     i = median
     #print "before:", i
     while (i > 0 and point_list[i-1][axis] == point_list[median][axis]):
@@ -119,28 +119,28 @@ def is_in_tree(tree, Point):
             return is_in_tree(tree.left, Point)
         else:
             return is_in_tree(tree.right, Point)
-        
+
 class TreeSampleFilter:
-    
+
     def __init__(self, Boundarys):
         self.tree = create(Boundarys)
-    
+
     def is_normal(self, sample_point):
         return is_in_tree(self.tree, sample_point)
 
 class SampleFilter:
-    
+
     def __init__(self, Boundarys):
         self.boundarys = Boundarys
-        
+
     def is_normal(self, sample_point):
         for x_lo, x_hi, y_lo, y_hi in self.boundarys:
             if (sample_point[0] >= x_lo and sample_point[0] <= x_hi
                 and sample_point[1] >= y_lo and sample_point[1] <= y_hi):
                 return True
         return False
-                
-    
+
+
 if __name__ == "__main__":
     point1 = (1,2,1,2)
     point2 = (0,1,2,3)
@@ -154,15 +154,15 @@ if __name__ == "__main__":
     points = zip(range(0,9),range(3,11),range(6,15))
     points = [point1, point2, point3, point4,point5,point6, point7,point8,point9]
     tree = create(points)
-    
+
     #print is_in_tree(tree,Point=[0.4,1])
     #print is_in_tree(tree,Point=[1,1])
-    
+
     TSF = TreeSampleFilter(points)
     print TSF.is_normal(sample_point = [0.4,1])
     print TSF.is_normal(sample_point = [1,1])
     print TSF.is_normal(sample_point = [1.5,2.5])
-    
+
     SF = SampleFilter(points)
     print SF.is_normal(sample_point = [0.4,1])
     print SF.is_normal(sample_point = [1,1])
